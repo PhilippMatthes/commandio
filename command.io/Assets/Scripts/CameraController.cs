@@ -35,11 +35,7 @@ public class CameraController : MonoBehaviour {
 
     private void UpdateHandheldMovement()
     {
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
-        {
-            Vector2 touchDeltaPosition = Input.GetTouch(0).deltaPosition;
-            transform.Translate(-touchDeltaPosition.x * panSpeed, -touchDeltaPosition.y * panSpeed, 0);
-        } else if (Input.touchCount == 2)
+        if (Input.touchCount == 2)
         {
             Touch touchZero = Input.GetTouch(0);
             Touch touchOne = Input.GetTouch(1);
@@ -54,6 +50,11 @@ public class CameraController : MonoBehaviour {
 
             Camera.main.orthographicSize += deltaMagnitudeDiff * 0.1f;
             Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, 5, 20);
+        }
+        else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
+        {
+            Vector2 touchDeltaPosition = Input.GetTouch(0).deltaPosition;
+            transform.Translate(-touchDeltaPosition.x * panSpeed * 0.1f, -touchDeltaPosition.y * panSpeed * 0.1f, 0);
         }
     }
 
