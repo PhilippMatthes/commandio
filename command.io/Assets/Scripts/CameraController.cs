@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent (typeof (Camera))]
 public class CameraController : MonoBehaviour {
 
+
+    /*
     public float panSpeed = 20f;
     public float panBorderThickness = 30f;
     public Vector2 panLimitRectangle;
@@ -48,8 +51,8 @@ public class CameraController : MonoBehaviour {
 
             float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 
-            Camera.main.orthographicSize += deltaMagnitudeDiff * 0.1f;
-            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, 5, 20);
+            Camera.main.fieldOfView += deltaMagnitudeDiff * 0.1f;
+            Camera.main.fieldOfView = Mathf.Clamp(Camera.main.orthographicSize, 5, 20);
         }
         else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
         {
@@ -93,17 +96,16 @@ public class CameraController : MonoBehaviour {
         pos.x = Mathf.Clamp(pos.x, -panLimitRectangle.x, panLimitRectangle.x);
         pos.z = Mathf.Clamp(pos.z, -panLimitRectangle.y, panLimitRectangle.y);
 
-        /*
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         pos.y -= scroll * scrollSpeed * 100f * Time.deltaTime;
 
         pos.y = Mathf.Clamp(pos.y, minY, maxY);
-        */
 
         if (transform.position != pos)
         {
             smoothing += smoothingSpeed;
             Vector3 smoothed = Vector3.Lerp(transform.position, pos, smoothing);
+
             transform.position = smoothed;
 
         }
@@ -113,6 +115,84 @@ public class CameraController : MonoBehaviour {
         }
 
         smoothing = Mathf.Clamp(smoothing, 0.0f, 1.0f);
+    }
+
+    */
+
+    //
+    // VARIABLES
+    //
+
+    public float turnSpeed = 4.0f;      // Speed of camera turning when mouse moves in along an axis
+    public float panSpeed = 4.0f;       // Speed of the camera when being panned
+    public float zoomSpeed = 4.0f;      // Speed of the camera going back and forth
+
+    private Vector3 mouseOrigin;    // Position of cursor when mouse dragging starts
+    private bool isPanning;     // Is the camera being panned?
+    private bool isRotating;    // Is the camera being rotated?
+    private bool isZooming;     // Is the camera zooming?
+
+    //
+    // UPDATE
+    //
+
+    void Update()
+    {
+        // Get the left mouse button
+        if (Input.GetMouseButtonDown(0))
+        {
+            // Get mouse origin
+            mouseOrigin = Input.mousePosition;
+            isRotating = true;
+        }
+
+        // Get the right mouse button
+        if (Input.GetMouseButtonDown(1))
+        {
+            // Get mouse origin
+            mouseOrigin = Input.mousePosition;
+            isPanning = true;
+        }
+
+        // Get the middle mouse button
+        if (Input.GetMouseButtonDown(2))
+        {
+            // Get mouse origin
+            mouseOrigin = Input.mousePosition;
+            isZooming = true;
+        }
+
+        // Disable movements on button release
+        if (!Input.GetMouseButton(0)) isRotating = false;
+        if (!Input.GetMouseButton(1)) isPanning = false;
+        if (!Input.GetMouseButton(2)) isZooming = false;
+
+        // Rotate camera along X and Y axis
+        if (isRotating)
+        {
+            Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - mouseOrigin);
+
+            transform.RotateAround(transform.position, transform.right, -pos.y * turnSpeed);
+            transform.RotateAround(transform.position, Vector3.up, pos.x * turnSpeed);
+        }
+
+        // Move the camera on it's XY plane
+        if (isPanning)
+        {
+            Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - mouseOrigin);
+
+            Vector3 move = new Vector3(pos.x * panSpeed, pos.y * panSpeed, 0);
+            transform.Translate(move, Space.Self);
+        }
+
+        // Move the camera linearly along Z axis
+        if (isZooming)
+        {
+            Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - mouseOrigin);
+
+            Vector3 move = pos.y * zoomSpeed * transform.forward;
+            transform.Translate(move, Space.World);
+        }
     }
 
 
