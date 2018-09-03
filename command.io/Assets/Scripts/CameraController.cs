@@ -6,8 +6,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour {
 
 
-    /*
-    public float panSpeed = 20f;
+    public float panSpeed = 5f;
     public float panBorderThickness = 30f;
     public Vector2 panLimitRectangle;
     public float scrollSpeed = 20f;
@@ -117,7 +116,7 @@ public class CameraController : MonoBehaviour {
         smoothing = Mathf.Clamp(smoothing, 0.0f, 1.0f);
     }
 
-    */
+    /*
 
     //
     // VARIABLES
@@ -195,5 +194,6 @@ public class CameraController : MonoBehaviour {
         }
     }
 
+    */
 
 }
