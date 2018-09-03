@@ -51,12 +51,12 @@ public class CameraController : MonoBehaviour {
             float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 
             Camera.main.fieldOfView += deltaMagnitudeDiff * 0.1f;
-            Camera.main.fieldOfView = Mathf.Clamp(Camera.main.orthographicSize, 5, 20);
+            Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, 5, 20);
         }
         else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
         {
             Vector2 touchDeltaPosition = Input.GetTouch(0).deltaPosition;
-            transform.Translate(-touchDeltaPosition.x * panSpeed * 0.1f, -touchDeltaPosition.y * panSpeed * 0.1f, 0);
+            transform.Translate(-touchDeltaPosition.x * panSpeed * 0.01f, -touchDeltaPosition.y * panSpeed * 0.01f, 0);
         }
     }
 
