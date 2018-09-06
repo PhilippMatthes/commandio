@@ -1,5 +1,5 @@
 ﻿/*
-  Copyright (c) 2018, Marko Viitanen (Fador)
+  Copyright (c) 2018, Marko Viitanen (Fador), Philipp Matthes
   
   Permission to use, copy, modify, and/or distribute this software for any purpose 
   with or without fee is hereby granted, provided that the above copyright notice 
@@ -20,13 +20,8 @@ using System;
 
 public class ObjectPlacement : MonoBehaviour
 {
-
-    [Tooltip("The prefab to place")]
-    public GameObject prefabPlacementObject;
-    [Tooltip("Placement success condition, e.g. a green transparent cube")]
-    public GameObject prefabOK;
-    [Tooltip("Placement fail condition, e.g. a red transparent cube")]
-    public GameObject prefabFail;
+    [Tooltip("Any prefab will block this dedicated area (x, z)")]
+    public Vector2 blockingArea;
 
     [Tooltip("Grid resolution, e.g. for 4x4 place grid 2 would allow 2x2 object to be placed")]
     public float grid = 2.0f;
@@ -38,8 +33,8 @@ public class ObjectPlacement : MonoBehaviour
     // Store which spaces are in use
     int[,] usedSpace;
 
-    private GameObject placementObject = null;
-    private GameObject areaObject = null;
+    private GameObject objectToPlace = null;
+    private GameObject instantiatedObjectToPlace = null;
 
     private Bounds placementBounds;
 
@@ -71,9 +66,17 @@ public class ObjectPlacement : MonoBehaviour
         }
     }
 
+    public void SetObjectToPlace(GameObject objectToPlace)
+    {
+        this.objectToPlace = objectToPlace;
+    }
+
     // Update is called once per frame
     void Update()
     {
+
+        if (!objectToPlace) return;
+
         Vector3 point;
 
         // Check for mouse ray collision with this object
@@ -90,28 +93,16 @@ public class ObjectPlacement : MonoBehaviour
             point.x = (float)(x) * grid - halfSlots.x + transform.position.x + grid / 2.0f;
             point.z = (float)(z) * grid - halfSlots.z + transform.position.z + grid / 2.0f;
 
-            // Create an object to show if this area is available for building
-            // Re-instantiate only when the slot has changed or the object not instantiated at all
-            if (lastPos.x != x || lastPos.z != z || areaObject == null)
+            if (!instantiatedObjectToPlace)
             {
-                lastPos.x = x;
-                lastPos.z = z;
-                if (areaObject != null)
-                {
-                    Destroy(areaObject);
-                }
-                areaObject = (GameObject)Instantiate(usedSpace[x, z] == 0 ? prefabOK : prefabFail, point, Quaternion.identity);
-            }
-
-            // Create or move the object
-            if (!placementObject)
-            {
-                placementObject = (GameObject)Instantiate(prefabPlacementObject, point, Quaternion.identity);
+                instantiatedObjectToPlace = Instantiate(objectToPlace, point, Quaternion.identity);
             }
             else
             {
-                placementObject.transform.position = point;
+                instantiatedObjectToPlace.transform.position = point;
             }
+            
+
 
             // On left click, insert the object to the area and mark it as "used"
             if (Input.GetMouseButtonDown(0) && mouseClick == false)
@@ -120,11 +111,23 @@ public class ObjectPlacement : MonoBehaviour
                 // Place the object
                 if (usedSpace[x, z] == 0)
                 {
-                    Debug.Log("Placement Position: " + x + ", " + z);
-                    usedSpace[x, z] = 1;
 
-                    // ToDo: place the result somewhere..
-                    Instantiate(prefabPlacementObject, point, Quaternion.identity);
+                    objectToPlace = null;
+                    instantiatedObjectToPlace = null;
+
+                    int areaX = (int)Math.Ceiling(blockingArea.x);
+                    int areaZ = (int)Math.Ceiling(blockingArea.y);
+
+                    int sizeX = x + areaX;
+                    int sizeZ = z + areaZ;
+
+                    for (var xIterator = x - areaX; xIterator <= sizeX; xIterator++)
+                    {
+                        for (var zIterator = z - areaZ; zIterator <= sizeZ; zIterator++)
+                        {
+                            usedSpace[xIterator, zIterator] = 1;
+                        }
+                    }
                 }
             }
             else if (!Input.GetMouseButtonDown(0))
@@ -132,19 +135,6 @@ public class ObjectPlacement : MonoBehaviour
                 mouseClick = false;
             }
 
-        }
-        else
-        {
-            if (placementObject)
-            {
-                Destroy(placementObject);
-                placementObject = null;
-            }
-            if (areaObject)
-            {
-                Destroy(areaObject);
-                areaObject = null;
-            }
         }
     }
 

@@ -13,13 +13,23 @@ public class CameraController : MonoBehaviour {
     public float minY = 20f;
     public float maxY = 120f;
     public float smoothingSpeed = 0.01f;
+    public float rotationSpeed = 20f;
+    public float rotationEaseDuration = 2f;
+    public GameObject target;
 
     float smoothing = 0.0f;
+    float halfEaseDuration = 1f;
+    float currentRotationEaseRight = 0f;
+    float currentRotationEaseLeft = 0f;
+
+    bool shouldRotateRight = false;
+    bool shouldRotateLeft = false;
 
     private bool onHandheld;
 
     void Start()
     {
+        halfEaseDuration = rotationEaseDuration / 2;
         onHandheld = SystemInfo.deviceType == DeviceType.Handheld;
     }
 
@@ -32,8 +42,44 @@ public class CameraController : MonoBehaviour {
         {
             UpdateMovement();
         }
+        UpdateRotation();
         
 	}
+
+    public void rotateLeft()
+    {
+        shouldRotateLeft = true;
+    }
+
+    public void rotateRight()
+    {
+        shouldRotateRight = true;
+    }
+
+    private void UpdateRotation()
+    {
+        if (shouldRotateLeft)
+        {
+            currentRotationEaseLeft += Time.deltaTime;
+            float ease = currentRotationEaseLeft > halfEaseDuration ? rotationEaseDuration - currentRotationEaseLeft : currentRotationEaseLeft;
+            transform.RotateAround(target.transform.position, Vector3.up, rotationSpeed * ease * Time.deltaTime);
+            if (currentRotationEaseLeft > rotationEaseDuration) {
+                currentRotationEaseLeft = 0;
+                shouldRotateLeft = false;
+            }
+        }
+        if (shouldRotateRight)
+        {
+            currentRotationEaseRight += Time.deltaTime;
+            float ease = currentRotationEaseRight > halfEaseDuration ? rotationEaseDuration - currentRotationEaseRight : currentRotationEaseRight;
+            transform.RotateAround(target.transform.position, Vector3.down, rotationSpeed * ease * Time.deltaTime);
+            if (currentRotationEaseRight > rotationEaseDuration)
+            {
+                currentRotationEaseRight = 0;
+                shouldRotateRight = false;
+            }
+        }
+    }
 
     private void UpdateHandheldMovement()
     {
