@@ -91,13 +91,13 @@ public class CameraController : MonoBehaviour {
 
             float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 
-            Vector3 translation = new Vector3(0, 0, deltaMagnitudeDiff * 0.1f);
+            Vector3 translation = new Vector3(0, 0, -deltaMagnitudeDiff * 0.1f);
             transform.Translate(translation, Space.Self);
         }
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
         {
             Vector2 touchDeltaPosition = Input.GetTouch(0).deltaPosition;
-            Vector3 translation = new Vector3(-touchDeltaPosition.x * panSpeed * 0.01f, -touchDeltaPosition.y * panSpeed * 0.01f, 0);
+            Vector3 translation = new Vector3(-touchDeltaPosition.x * panSpeed, -touchDeltaPosition.y * panSpeed, 0);
 
             transform.Translate(translation, Space.Self);
         }
