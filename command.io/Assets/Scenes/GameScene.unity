@@ -634,7 +634,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 517.47327, y: -42.55}
+  m_AnchoredPosition: {x: 518.11566, y: -42.55}
   m_SizeDelta: {x: 60, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &140834723
@@ -6772,7 +6772,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   placementEffect: {fileID: 100748, guid: cd4d7020429cde74db076ffa72495419, type: 2}
-  blockingArea: {x: 2, y: 2}
+  blockingArea: {x: 1, y: 1}
   grid: 2
   mask:
     serializedVersion: 2
@@ -7024,13 +7024,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f518519cd7549e4bb57ebef32e6f1ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panSpeed: 0
+  panSpeed: 0.1
   panBorderThickness: 200
-  panLimitRectangle: {x: 200, y: 300}
-  scrollSpeed: 20
-  minY: 20
-  maxY: 200
-  smoothingSpeed: 0.001
+  scrollSpeed: 100
   rotationSpeed: 200
   rotationEaseDuration: 1
   target: {fileID: 454383491}
@@ -7266,7 +7262,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 457.47327, y: -42.55}
+  m_AnchoredPosition: {x: 458.11566, y: -42.55}
   m_SizeDelta: {x: 60, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &615667104

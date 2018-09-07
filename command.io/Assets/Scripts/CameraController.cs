@@ -6,18 +6,13 @@ using UnityEngine;
 public class CameraController : MonoBehaviour {
 
 
-    public float panSpeed = 5f;
-    public float panBorderThickness = 30f;
-    public Vector2 panLimitRectangle;
-    public float scrollSpeed = 20f;
-    public float minY = 20f;
-    public float maxY = 120f;
-    public float smoothingSpeed = 0.01f;
-    public float rotationSpeed = 20f;
-    public float rotationEaseDuration = 2f;
+    public float panSpeed = 0.2f;
+    public float panBorderThickness = 200f;
+    public float scrollSpeed = 100f;
+    public float rotationSpeed = 200f;
+    public float rotationEaseDuration = 1f;
     public GameObject target;
 
-    float smoothing = 0.0f;
     float halfEaseDuration = 1f;
     float currentRotationEaseRight = 0f;
     float currentRotationEaseLeft = 0f;
@@ -25,7 +20,7 @@ public class CameraController : MonoBehaviour {
     bool shouldRotateRight = false;
     bool shouldRotateLeft = false;
 
-    private bool onHandheld;
+    bool onHandheld;
 
     void Start()
     {
@@ -96,19 +91,22 @@ public class CameraController : MonoBehaviour {
 
             float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 
-            Camera.main.fieldOfView += deltaMagnitudeDiff * 0.1f;
-            Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, 5, 20);
+            Vector3 translation = new Vector3(0, 0, deltaMagnitudeDiff * 0.1f);
+            transform.Translate(translation, Space.Self);
         }
-        else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
         {
             Vector2 touchDeltaPosition = Input.GetTouch(0).deltaPosition;
-            transform.Translate(-touchDeltaPosition.x * panSpeed * 0.01f, -touchDeltaPosition.y * panSpeed * 0.01f, 0);
+            Vector3 translation = new Vector3(-touchDeltaPosition.x * panSpeed * 0.01f, -touchDeltaPosition.y * panSpeed * 0.01f, 0);
+
+            transform.Translate(translation, Space.Self);
         }
     }
 
     private void UpdateMovement()
     {
-        Vector3 pos = transform.position;
+
+        Vector3 pos = new Vector3(0, 0, 0);
         Vector2 mouse = Input.mousePosition;
         float screenHeight = Screen.height;
         float screenWidth = Screen.width;
@@ -120,12 +118,12 @@ public class CameraController : MonoBehaviour {
 
         if (deltaUpperScreenEdge < panBorderThickness)
         {
-            pos.z += panSpeed * (panBorderThickness - deltaUpperScreenEdge) * Time.deltaTime;
+            pos.y += panSpeed * (panBorderThickness - deltaUpperScreenEdge) * Time.deltaTime;
         }
 
         if (deltaLowerScreenEdge < panBorderThickness)
         {
-            pos.z -= panSpeed * (panBorderThickness - deltaLowerScreenEdge) * Time.deltaTime;
+            pos.y -= panSpeed * (panBorderThickness - deltaLowerScreenEdge) * Time.deltaTime;
         }
 
         if (deltaRightScreenEdge < panBorderThickness)
@@ -138,28 +136,13 @@ public class CameraController : MonoBehaviour {
             pos.x -= panSpeed * (panBorderThickness - deltaLeftScreenEdge) * Time.deltaTime;
         }
 
-        pos.x = Mathf.Clamp(pos.x, -panLimitRectangle.x, panLimitRectangle.x);
-        pos.z = Mathf.Clamp(pos.z, -panLimitRectangle.y, panLimitRectangle.y);
-
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-        pos.y -= scroll * scrollSpeed * 100f * Time.deltaTime;
-
-        pos.y = Mathf.Clamp(pos.y, minY, maxY);
+        pos.z = scroll * scrollSpeed * 100f * Time.deltaTime;
 
         if (transform.position != pos)
         {
-            smoothing += smoothingSpeed;
-            Vector3 smoothed = Vector3.Lerp(transform.position, pos, smoothing);
-
-            transform.position = smoothed;
-
+            transform.Translate(pos, Space.Self);
         }
-        else
-        {
-            smoothing = 0f;
-        }
-
-        smoothing = Mathf.Clamp(smoothing, 0.0f, 1.0f);
     }
 
     /*
