@@ -20,6 +20,8 @@ using System;
 
 public class ObjectPlacement : MonoBehaviour
 {
+    public GameObject placementEffect;
+
     [Tooltip("Any prefab will block this dedicated area (x, z)")]
     public Vector2 blockingArea;
 
@@ -111,6 +113,12 @@ public class ObjectPlacement : MonoBehaviour
                 // Place the object
                 if (usedSpace[x, z] == 0)
                 {
+
+                    if (placementEffect) {
+                        ParticleSystem.ShapeModule shapeModule = placementEffect.GetComponent<ParticleSystem>().shape;
+                        shapeModule.scale = new Vector3(blockingArea.x, 0, blockingArea.y);
+                        Instantiate(placementEffect, point, Quaternion.identity);
+                    }
 
                     objectToPlace = null;
                     instantiatedObjectToPlace = null;
