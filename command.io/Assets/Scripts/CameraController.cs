@@ -100,7 +100,6 @@ public class CameraController : MonoBehaviour {
         else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved)
         {
             Vector2 touchDeltaPosition = Input.GetTouch(0).deltaPosition;
-            touchDeltaPosition += Input.GetTouch(1).deltaPosition;
             Vector3 translation = new Vector3(-touchDeltaPosition.x * panSpeed, -touchDeltaPosition.y * panSpeed, 0);
 
             transform.Translate(translation, Space.Self);
